@@ -47,3 +47,5 @@ todo.addEventListener('change', function(event){
     })
     displayMessage();
 });
+
+let ololo = true;
