@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>To-Do List</title>
+    <!-- Font Awesome icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
     <!-- Google fonts "Roboto" -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet">
 
@@ -17,16 +19,47 @@
     <div class="wrapper">
       <div class="to-do">
         <header class="header">
-          <h1 class="header-title">to do list</h1>
-          <input class="message" type="text" placeholder="Описание">
-          <button class="add">Добавить</button>
+          <!-- <h1 class="header-title">to do list</h1> -->
+          <div class="header-date">
+            <div class="date-day">
+              <span id="day">Monday</span>
+            </div>
+            <div class="date-date">
+              <span id="date">0</span>
+              <span>/</span>
+              <span id="month">0</span>
+              <span>/</span>
+              <span id="year">0000</span>
+            </div>
+          </div>
+          <div class="header-counter">
+            <span id="counter"></span>
+          </div>
+          <div class="header-control">
+            <input class="message" type="text" placeholder="Описание...">
+            <div class="add"><i class="far fa-plus-square"></i></div>
+          </div>
         </header>
         <main class="main">
-          <ul class="list"></ul>
+          <div class="tabs">
+            <div class="tabs-nav">
+              <div class="tabs-nav-item is-active" data-tab-name="tab-1">to do</div>
+              <div class="tabs-nav-item" data-tab-name="tab-2">done</div>
+            </div>
+            <div class="tabs-content">
+              <div class="tab tab-1 is-active">
+                <ul class="list" id="to-do-list"></ul>
+              </div>
+              <div class="tab tab-2">
+                <ul class="list" id="done-list"></ul>
+              </div>
+            </div>
+          </div>
         </main>
       </div>
     </div>
 
+    <!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
     <script src="js/main.js"></script>
   </body>
 </html>
