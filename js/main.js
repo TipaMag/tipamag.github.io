@@ -1,4 +1,5 @@
-// -------------------------------------------------------------------
+"use strict"
+// ------------------------- header - date ------------------------------
 let date = new Date(),
     day = date.getDay(),
     hours = date.getHours(),
@@ -14,22 +15,26 @@ function getWeekDay(day) {
                 'Среда', 'Четверг', 'Пятница', 'Субота'];
     return days[day];
 }
-// -------------------------------------------------------------------
-
+// ------------------------ header - counter ----------------------------
 let counter = document.querySelector('#counter'),
-    addMessage = document.querySelector('.message'),
+    counterVal = 0;
+
+function todoCounter() {
+    counterVal > 1 ? counter.innerHTML = `${counterVal} Tasks` : counter.innerHTML = `${counterVal} Task`;
+}
+// ----------------------------------------------------------------------
+let addMessage = document.querySelector('.message'),
     addButton = document.querySelector('.add'),
+    tabsContent = document.querySelector('.tabs-content'),
     todo = document.querySelector('#to-do-list'),
     done = document.querySelector('#done-list');
 
-let counterVal = 0;
-let todoList = [],
-    doneList = [];
+let todoList = [];
 
 if(localStorage.getItem('todo')) {
     todoList = JSON.parse(localStorage.getItem('todo'));
     displayMessage();
-    
+    displayDoneMessage();
     counterVal = Object.keys(todoList).length;
     todoCounter();
 };
@@ -41,11 +46,9 @@ addButton.addEventListener('click', function(){
             checked: false,
             important: false
         };
-
-        todoList.push(newTodo);
+        todoList.unshift(newTodo);
         displayMessage();
         localStorage.setItem('todo', JSON.stringify(todoList));
-
         addMessage.value = '';
         todoCounter(counterVal++);
     }
@@ -54,57 +57,98 @@ addButton.addEventListener('click', function(){
 function displayMessage() {
     let displayMessage = '';
     todoList.forEach(function(item, i){
-        displayMessage += `
-        <li class='list-item'>
-            <input id='item_${i}'  type='checkbox' ${item.checked ? 'checked' : ''}>
-            <label for='item_${i}' class='${item.important ? 'important' : ''}'>${item.todo}</label>
-            <i class="delete-item fas fa-trash-alt"></i>
-        </li>
-        `;
-        todo.innerHTML = displayMessage;
-    })
+        if(!item.checked) {
+            displayMessage += `
+            <li class='list-item'>
+                <input id='item_${i}'  type='checkbox' ${item.checked ? 'checked' : ''}>
+                <label for='item_${i}' class='${item.important ? 'important' : ''}'>${item.todo}</label>
+                <i class="delete-item fas fa-trash-alt"></i>
+            </li>
+            `;
+        }
+    });
+    todo.innerHTML = displayMessage;
+};
+function displayDoneMessage() {
+    let displayDoneMessage = '';
+    todoList.forEach(function(item, i){
+        if(item.checked) {
+            displayDoneMessage += `
+            <li class='list-item'>
+                <input id='item_${i}'  type='checkbox' ${item.checked ? 'checked' : ''}>
+                <label for='item_${i}' class='${item.important ? 'important' : ''}'>${item.todo}</label>
+                <i class="delete-item fas fa-trash-alt"></i>
+            </li>
+            `;
+        }
+    });
+    done.innerHTML = displayDoneMessage;
 };
 
-todo.addEventListener('change', function(event){
+tabsContent.addEventListener('change', function(event){
     let idInput = event.target.getAttribute('id');
-    let forLable = todo.querySelector(`[for=${idInput}]`);
+    let forLable = tabsContent.querySelector(`[for=${idInput}]`);
     let valueLable = forLable.innerHTML;
 
     todoList.forEach(function(item){
         if(item.todo === valueLable) {
             item.checked = !item.checked;
+            if(item.checked) {
+                setTimeout(() => {
+                    event.target.parentElement.style.cssText = `transition: 0.5s;
+                    transform: translateX(100%);
+                    `;
+                    setTimeout(() => {
+                        event.target.parentElement.remove();
+                    }, 500);
+                }, 0);
+                displayDoneMessage();
+            }
+            if(!item.checked) {
+                setTimeout(() => {
+                    event.target.parentElement.style.cssText = `transition: 0.5s;
+                    transform: translateX(-100%);
+                    `;
+                    setTimeout(() => {
+                        event.target.parentElement.remove();
+                    }, 500);
+                }, 0);
+                displayMessage();
+            }
         }
-        localStorage.setItem('todo', JSON.stringify(todoList));
-    })
+    });
+    localStorage.setItem('todo', JSON.stringify(todoList));
 });
-
-todo.addEventListener('click', function(event){
+// ------------------------- delete todo-item ------------------------------
+tabsContent.addEventListener('click', function(event){
     if (event.target.tagName == 'I') {
-
         let idInput = event.target.parentElement.firstElementChild.getAttribute('id');
-        let forLable = todo.querySelector(`[for=${idInput}]`);
+        let forLable = tabsContent.querySelector(`[for=${idInput}]`);
         let valueLable = forLable.innerHTML;
     
         todoList.forEach(function(item, i){
             if(item.todo === valueLable) {
                 todoList.splice(i,1);
             }
-            localStorage.setItem('todo', JSON.stringify(todoList));
         });
-
-        event.target.parentElement.remove();
+        localStorage.setItem('todo', JSON.stringify(todoList));
+        setTimeout(() => {
+            event.target.parentElement.style.cssText = `transition: 0.5s;
+            background-color: red;
+            opacity: 0;
+            `;
+            setTimeout(() => {
+                event.target.parentElement.remove();
+            }, 500);
+        }, 0);
         todoCounter(counterVal--);
     }
 });
-
-function todoCounter() {
-    counterVal > 1 ? counter.innerHTML = `${counterVal} Tasks` : counter.innerHTML = `${counterVal} Task`;
-}
-
+// ------------------------------- tabs -----------------------------------
 let tab = function () {
     let tabNav = document.querySelectorAll('.tabs-nav-item'),
-    tabContent = document.querySelectorAll('.tab'),
-    tabName;
+    tabContent = document.querySelectorAll('.tab');
+    let tabName;
 
     tabNav.forEach(item => {
         item.addEventListener('click', selectTabNav)
